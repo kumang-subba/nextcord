@@ -20,7 +20,6 @@ const Friends = async () => {
   return (
     <div className="px-5 pt-8">
       <div className="flex flex-col">
-        {friends.length > 0 && <p className="text-lg font-semibold">Search bar</p>}
         {friends.length > 0 ? (
           <ScrollArea className="w-full m-4 pr-4 rounded-md">
             {friends.map((friend) => {
