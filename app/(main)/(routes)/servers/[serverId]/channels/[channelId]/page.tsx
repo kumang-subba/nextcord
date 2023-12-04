@@ -8,6 +8,7 @@ import { getOrCreateChat } from "@/lib/chat";
 import { db } from "@/lib/db";
 import { ChannelType } from "@prisma/client";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 interface pageProps {
   params: {
@@ -69,33 +70,42 @@ const page = async ({ params }: pageProps) => {
     },
   });
   return (
-    <div className="flex flex-col h-screen bg-[#393b3e]">
-      <ChatHeader name={channel.name!} type="server" serverId={channel.serverId} />
-      {channel.type === ChannelType.TEXT && (
-        <>
-          <ChannelChatMessages
-            currentUser={currentUser}
-            name={channel.name!}
-            channelId={channel.id}
-            socketUrl="/api/socket/channelMessages"
-            socketQuery={{
-              channelId: channel.id,
-              serverId: channel.serverId,
-            }}
-            currentMember={currentMember}
-            imageUrl={server?.imageUrl}
-            initialMessages={messages}
-          />
-          <ChatInput
-            chatTarget={`#${channel.name}`}
-            endpoint="/api/socket/channelMessages"
-            query={{ channelId: channel.id, serverId: channel.serverId }}
-          />
-        </>
-      )}
-      {channel.type === ChannelType.AUDIO && <MediaRoom chatId={channel.id} video={false} audio={true} />}
-      {channel.type === ChannelType.VIDEO && <MediaRoom chatId={channel.id} video={true} audio={true} />}
-    </div>
+    <Suspense
+      fallback={
+        <div className="h-screen flex flex-col bg-[#393b3e] p-4 gap-4">
+          <div className="h-14 rounded-lg bg-slate-700 animate-pulse" />
+          <div className="flex-1 rounded-lg bg-slate-700 animate-pulse" />
+        </div>
+      }
+    >
+      <div className="flex flex-col h-screen bg-[#393b3e]">
+        <ChatHeader name={channel.name!} type="server" serverId={channel.serverId} />
+        {channel.type === ChannelType.TEXT && (
+          <>
+            <ChannelChatMessages
+              currentUser={currentUser}
+              name={channel.name!}
+              channelId={channel.id}
+              socketUrl="/api/socket/channelMessages"
+              socketQuery={{
+                channelId: channel.id,
+                serverId: channel.serverId,
+              }}
+              currentMember={currentMember}
+              imageUrl={server?.imageUrl}
+              initialMessages={messages}
+            />
+            <ChatInput
+              chatTarget={`#${channel.name}`}
+              endpoint="/api/socket/channelMessages"
+              query={{ channelId: channel.id, serverId: channel.serverId }}
+            />
+          </>
+        )}
+        {channel.type === ChannelType.AUDIO && <MediaRoom chatId={channel.id} video={false} audio={true} />}
+        {channel.type === ChannelType.VIDEO && <MediaRoom chatId={channel.id} video={true} audio={true} />}
+      </div>
+    </Suspense>
   );
 };
 

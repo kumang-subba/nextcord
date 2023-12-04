@@ -1,6 +1,7 @@
 import Friends from "@/components/Friends";
 import { MobileToggle } from "@/components/MobileToggle";
 import { Users } from "lucide-react";
+import { Suspense } from "react";
 
 const Page = () => {
   return (
